@@ -1,0 +1,130 @@
+import os
+import json
+import time
+import threading
+import urllib.request
+from datetime import datetime
+from curl_cffi import requests
+from flask import Flask
+
+app = Flask(__name__)
+
+# --- SENİN AYARLARIN ---
+TELEGRAM_TOKEN = "8896973932:AAGjwZGGrqoTRr4DzO1JKM5zBt6ez5S7bOo"
+CHAT_ID = "1027692313"
+SOFASCORE_URL = "https://www.sofascore.com/api/v1/user-account/6758979fed09a67b595d5ba2/predictions/next/0"
+KAYIT_DOSYASI = "gonderilen_tahminler.json"
+KONTROL_SURESI = 300  # 5 dakika
+
+@app.route('/')
+def home():
+    return "Scuti Tahmin Takip Botu 7/24 Aktif Çalışıyor!"
+
+def gonderilenleri_yukle():
+    if os.path.exists(KAYIT_DOSYASI):
+        try:
+            with open(KAYIT_DOSYASI, "r", encoding="utf-8") as f:
+                return set(json.load(f))
+        except Exception:
+            return set()
+    return set()
+
+def gonderilenleri_kaydet(kayit_seti):
+    with open(KAYIT_DOSYASI, "w", encoding="utf-8") as f:
+        json.dump(list(kayit_seti), f)
+
+def telegram_mesaj_gonder(mesaj):
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    veri = json.dumps({
+        "chat_id": CHAT_ID,
+        "text": mesaj,
+        "parse_mode": "HTML"
+    }).encode("utf-8")
+    
+    req = urllib.request.Request(
+        url, 
+        data=veri, 
+        headers={"Content-Type": "application/json"}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as response:
+            return response.status == 200
+    except Exception as e:
+        print(f"Telegram gönderim hatası: {e}")
+        return False
+
+def veriyi_cek():
+    headers = {
+        "Accept": "*/*",
+        "Accept-Language": "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Origin": "https://www.sofascore.com",
+        "Referer": "https://www.sofascore.com/",
+    }
+    try:
+        session = requests.Session(impersonate="chrome")
+        res = session.get(SOFASCORE_URL, headers=headers, timeout=15)
+        if res.status_code == 200:
+            return res.json()
+    except Exception as e:
+        print(f"Bağlantı hatası: {e}")
+    return None
+
+def tahminleri_kontrol_et():
+    while True:
+        try:
+            gonderilenler = gonderilenleri_yukle()
+            veri = veriyi_cek()
+            
+            if veri:
+                tahmin_listesi = veri.get("predictions", [])
+                for item in reversed(tahmin_listesi):
+                    mac_id = str(item.get("eventId"))
+
+                    if mac_id and mac_id not in gonderilenler:
+                        ev_sahibi = item.get("homeTeamName", "Bilinmiyor")
+                        deplasman = item.get("awayTeamName", "Bilinmiyor")
+                        tahmin = item.get("vote", "-")
+                        oran = item.get("odds", {}).get("decimalValue", "-")
+                        spor = item.get("sportSlug", "football")
+                        
+                        ts = item.get("startDateTimestamp")
+                        mac_zamani = datetime.fromtimestamp(ts).strftime("%d.%m.%Y - %H:%M") if ts else "Belirtilmemiş"
+
+                        if tahmin == "1":
+                            tahmin_detay = f"1 ({ev_sahibi} Kazanır)"
+                        elif tahmin == "2":
+                            tahmin_detay = f"2 ({deplasman} Kazanır)"
+                        elif tahmin == "X":
+                            tahmin_detay = "X (Beraberlik)"
+                        else:
+                            tahmin_detay = tahmin
+
+                        spor_ikon = "⚽" if spor == "football" else "🏀" if spor == "basketball" else "🎾"
+
+                        mesaj = (
+                            f"🔔 <b>Scuti. Yeni Tahmin Girdi!</b>\n\n"
+                            f"{spor_ikon} <b>Maç:</b> {ev_sahibi} - {deplasman}\n"
+                            f"🕒 <b>Tarih/Saat:</b> {mac_zamani}\n"
+                            f"🎯 <b>Tahmin:</b> {tahmin_detay}\n"
+                            f"📈 <b>Oran:</b> {oran}"
+                        )
+                        
+                        if telegram_mesaj_gonder(mesaj):
+                            gonderilenler.add(mac_id)
+                            gonderilenleri_kaydet(gonderilenler)
+                        
+                        time.sleep(1)
+        except Exception as e:
+            print(f"Hata döngüsü: {e}")
+            
+        time.sleep(KONTROL_SURESI)
+
+# Arka planda tahminleri kontrol edecek döngüyü başlatıyoruz
+t = threading.Thread(target=tahminleri_kontrol_et)
+t.daemon = True
+t.start()
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
