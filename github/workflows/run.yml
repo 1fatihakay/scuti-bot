@@ -22,5 +22,8 @@ jobs:
           pip install curl_cffi requests
 
       - name: Botu Çalıştır
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          python3 app.py
+          python app.py
