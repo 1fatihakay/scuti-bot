@@ -55,11 +55,18 @@ def telegram_mesaj_gonder(mesaj):
 
 def veriyi_cek():
     headers = {
+        "Host": "www.sofascore.com",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:158.0) Gecko/20100101 Firefox/158.0",
         "Accept": "*/*",
         "Accept-Language": "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Cache-Control": "no-cache",
-        "Origin": "https://www.sofascore.com",
-        "Referer": "https://www.sofascore.com/",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Referer": "https://www.sofascore.com/tr/user/profile/6758979fed09a67b595d5ba2",
+        "Cookie": "__gads=ID=a33774a0e8980c9c:T=1792942648:RT=1793120264:S=ALNI_MY976Rieain66y_Tok-P36rauopKA; __gpi=UID=0000155c46c0e19c:T=1792942648:RT=1793120264:S=ALNI_Mbo3Xw6Z_PJExAWfHyiO6_rLMHOxQ; __eoi=ID=0f5e613656d5028a:T=1792942648:RT=1793120264:S=AA-AfjaV5Lh6z6Rf8s7jAcc3eger; cto_bundle=bYo67181T0F2QkJOQ3lRRFIwUkFpZyUyQktjMkxWdVE3V1B3emNGZEpSUTlkRDlLZ3k4MlIyeVV6ZnlnYW1uOSUyQm94JTJGT29Xc1RVdXJudk50JTJCek91UURYbDBJTGVyNldKb3Y3UTN0JTJCcmM3MW5wSHROcXhrTWslMkZBOVhUcHdIaGZBRXpzS1VrTiUyRiUyRjR0TDVaRjdjbGd5cG13cjFLZzJiNWY1c1pWU0V5N1djMnpYQTVQSHlFZ2RSWmkzV0ZrR3ptNTVGeWx3Y3Zh; _gcl_au=1.1.1855409508.1792942667; _ga_HNQ9P9MGZR=GS2.1.s1793119895$o33$g1$t1793121884$j53$l0$h0; _ga=GA1.1.453990442.1792942667; g_state={\"i_l\":1,\"i_ll\":1792942710401,\"i_b\":\"hABHEmEfNmGp2B3APM7qpASwnstdGSc4OVcFIqT8mrY\",\"i_e\":{\"enable_itp_optimization\":24},\"i_et\":1792942710401}; FCCDCF=%5Bnull%2Cnull%2Cnull%2Cnull%2Cnull%2Cnull%2C%5B%5B32%2C%22%5B%5C%22069049f4-2615-4b82-ad3b-2b10f5599002%5C%22%2C%5B1792942643%2C796000000%5D%5D%22%5D%5D%5D; FCNEC=%5B%5B%22AKsRol_oJKVMLzRjhBlftxvY_H5WXZFJyPecliYavkEDo6rFKCy-pVVkIRDxHo9d1I3SwBkWYTIIxMSnE0Uoa_xDcZZ3wajdqUfAmadsyemd8oGGhFtQNDxRcXne6hVcsr9d144cMF0nMwUC6yhh2lyYoVjSKKj6Tg%3D%3D%22%5D%5D",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
+        "Priority": "u=4",
+        "Cache-Control": "max-age=0"
     }
     try:
         session = requests.Session(impersonate="chrome")
