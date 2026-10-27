@@ -33,3 +33,4 @@ def check_predictions():
 
 if __name__ == "__main__":
     check_predictions()
+send_telegram_message("Test bildirimi")    
