@@ -71,16 +71,21 @@ def veriyi_cek():
     return None
 
 def tahminleri_kontrol_et():
+    print(">>> Arka plan döngüsü başlatıldı!", flush=True)
     while True:
         try:
+            print(">>> Sofascore taranıyor...", flush=True)
             gonderilenler = gonderilenleri_yukle()
             veri = veriyi_cek()
-            
+
+            if not veri:
+                print(">>> UYARI: Sofascore'dan veri çekilemedi (Boş döndü veya engellendi)!", flush=True)
+
             if veri:
                 tahmin_listesi = veri.get("predictions", [])
+                print(f">>> {len(tahmin_listesi)} adet tahmin bulundu, kontrol ediliyor...", flush=True)
                 for item in reversed(tahmin_listesi):
                     mac_id = str(item.get("eventId"))
-
                     if mac_id and mac_id not in gonderilenler:
                         ev_sahibi = item.get("homeTeamName", "Bilinmiyor")
                         deplasman = item.get("awayTeamName", "Bilinmiyor")
@@ -116,7 +121,7 @@ def tahminleri_kontrol_et():
                         
                         time.sleep(1)
         except Exception as e:
-            print(f"Hata döngüsü: {e}")
+            print(f">>> Hata döngüsü: {e}", flush=True)
             
         time.sleep(KONTROL_SURESI)
 
