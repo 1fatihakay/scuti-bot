@@ -64,12 +64,16 @@ def veriyi_cek():
     try:
         session = requests.Session(impersonate="chrome")
         res = session.get(SOFASCORE_URL, headers=headers, timeout=15)
+        print(f">>> Sofascore Status Code: {res.status_code}", flush=True)
+        
         if res.status_code == 200:
-            print(f">>> Sofascore Status Code: {res.status_code}", flush=True) 
             return res.json()
+        else:
+            print(f">>> Sofascore beklenmeyen yanıt döndü: {res.text[:100]}", flush=True)
+            return None
     except Exception as e:
-        print(f"Bağlantı hatası: {e}")
-    return None
+        print(f">>> Bağlantı hatasi: {e}", flush=True)
+        return None
 
 def tahminleri_kontrol_et():
     print(">>> Arka plan döngüsü başlatıldı!", flush=True)
