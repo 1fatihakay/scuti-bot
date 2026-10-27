@@ -65,6 +65,7 @@ def veriyi_cek():
         session = requests.Session(impersonate="chrome")
         res = session.get(SOFASCORE_URL, headers=headers, timeout=15)
         if res.status_code == 200:
+            print(f">>> Sofascore Status Code: {res.status_code}", flush=True) 
             return res.json()
     except Exception as e:
         print(f"Bağlantı hatası: {e}")
