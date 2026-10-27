@@ -12,7 +12,7 @@ app = Flask(__name__)
 # --- SENİN AYARLARIN ---
 TELEGRAM_TOKEN = "8896973932:AAGjwZGGrqoTRr4DzO1JKM5zBt6ez5S7bOo"
 CHAT_ID = "1027692313"
-SOFASCORE_URL = "https://www.sofascore.com/api/v1/user-account/6758979fed09a67b595d5ba2/predictions/next/0"
+SOFASCORE_URL = "https://www.sofascore.com/api/v1/user-account/6758979fed09a67b595d5ba2"
 KAYIT_DOSYASI = "gonderilen_tahminler.json"
 KONTROL_SURESI = 300  # 5 dakika
 
