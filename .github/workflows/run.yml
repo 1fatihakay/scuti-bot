@@ -2,7 +2,7 @@ name: Sofascore Bot
 
 on:
   schedule:
-    - cron: '*/5 * * * *' # Her 5 dakikada bir otomatik çalışır
+    - cron: '*/5 * * * *' # Her  dakikada bir otomatik çalışır
   workflow_dispatch:
 
 jobs:
